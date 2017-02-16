@@ -17,24 +17,24 @@ class GripPipeline:
 
         self.blur_output = None
 
-        self.__hsl_threshold_input = self.blur_output
-        self.__hsl_threshold_hue = [32.37410071942446, 100.5432937181664]
-        self.__hsl_threshold_saturation = [61.915467625899275, 194.3887945670628]
-        self.__hsl_threshold_luminance = [240.78237410071944, 255.0]
+        self.__hsv_threshold_input = self.blur_output
+        self.__hsv_threshold_hue = [48.30508474576271, 106.65534804753821]
+        self.__hsv_threshold_saturation = [0.0, 49.54674348878373]
+        self.__hsv_threshold_value = [206.49717514124293, 255.0]
 
-        self.hsl_threshold_output = None
+        self.hsv_threshold_output = None
 
-        self.__find_contours_input = self.hsl_threshold_output
+        self.__find_contours_input = self.hsv_threshold_output
         self.__find_contours_external_only = False
 
         self.find_contours_output = None
 
         self.__filter_contours_contours = self.find_contours_output
-        self.__filter_contours_min_area = 50.0
+        self.__filter_contours_min_area = 60.0
         self.__filter_contours_min_perimeter = 40.0
         self.__filter_contours_min_width = 0
         self.__filter_contours_max_width = 1000
-        self.__filter_contours_min_height = 25.0
+        self.__filter_contours_min_height = 30.0
         self.__filter_contours_max_height = 1000.0
         self.__filter_contours_solidity = [0, 100]
         self.__filter_contours_max_vertices = 500.0
@@ -53,12 +53,12 @@ class GripPipeline:
         self.__blur_input = source0
         (self.blur_output) = self.__blur(self.__blur_input, self.__blur_type, self.__blur_radius)
 
-        # Step HSL_Threshold0:
-        self.__hsl_threshold_input = self.blur_output
-        (self.hsl_threshold_output) = self.__hsl_threshold(self.__hsl_threshold_input, self.__hsl_threshold_hue, self.__hsl_threshold_saturation, self.__hsl_threshold_luminance)
+        # Step HSV_Threshold0:
+        self.__hsv_threshold_input = self.blur_output
+        (self.hsv_threshold_output) = self.__hsv_threshold(self.__hsv_threshold_input, self.__hsv_threshold_hue, self.__hsv_threshold_saturation, self.__hsv_threshold_value)
 
         # Step Find_Contours0:
-        self.__find_contours_input = self.hsl_threshold_output
+        self.__find_contours_input = self.hsv_threshold_output
         (self.find_contours_output) = self.__find_contours(self.__find_contours_input, self.__find_contours_external_only)
 
         # Step Filter_Contours0:
@@ -89,18 +89,18 @@ class GripPipeline:
             return cv2.bilateralFilter(src, -1, round(radius), round(radius))
 
     @staticmethod
-    def __hsl_threshold(input, hue, sat, lum):
-        """Segment an image based on hue, saturation, and luminance ranges.
+    def __hsv_threshold(input, hue, sat, val):
+        """Segment an image based on hue, saturation, and value ranges.
         Args:
             input: A BGR numpy.ndarray.
             hue: A list of two numbers the are the min and max hue.
             sat: A list of two numbers the are the min and max saturation.
-            lum: A list of two numbers the are the min and max luminance.
+            lum: A list of two numbers the are the min and max value.
         Returns:
             A black and white numpy.ndarray.
         """
-        out = cv2.cvtColor(input, cv2.COLOR_BGR2HLS)
-        return cv2.inRange(out, (hue[0], lum[0], sat[0]),  (hue[1], lum[1], sat[1]))
+        out = cv2.cvtColor(input, cv2.COLOR_BGR2HSV)
+        return cv2.inRange(out, (hue[0], sat[0], val[0]),  (hue[1], sat[1], val[1]))
 
     @staticmethod
     def __find_contours(input, external_only):
