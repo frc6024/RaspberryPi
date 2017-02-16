@@ -1,7 +1,7 @@
 import cv2
 import urllib.request as rq
 import numpy as np
-from Grip16 import GripPipeline as GripPipeline
+from filterer import GripPipeline as GripPipeline
 from networktables import NetworkTables
 
 stream=rq.urlopen('http://localhost/?action=stream')
@@ -32,9 +32,10 @@ while True:
         #    j = cv2.contourArea(contour)
         #    highest = (j,contour) if j > highest[0] else highest
 
-        for contour in PipeObj.filter_contours_output:
-            x,y,w,h = cv2.boundingRect(contour)
-            cv2.rectangle(PipeObj.cv_resize_output,(x,y),(x+w,y+h),(0,0,255),2)
+        #for contour in PipeObj.find_contours_output:
+            #x,y,w,h = cv2.boundingRect(contour)
+            
+         #   cv2.rectangle(PipeObj.inputIn,(x,y),(x+w,y+h),(0,0,255),2)
         
         #rect = cv2.boundingRect(highest[1])
         #box = np.int0(cv2.boxPoints(rect))
@@ -52,5 +53,4 @@ while True:
             sd.putNumberArray("response",dat)
             sd.putBoolean('detect',False)
         """
-        
-        cv2.imshow('i',cv2.resize(PipeObj.cv_resize_output,(0,0),fx=2,fy=2,interpolation=cv2.INTER_LINEAR))
+        cv2.imshow('i',PipeObj.hsv_threshold_output)

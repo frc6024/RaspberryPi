@@ -28,5 +28,5 @@ else:
     g = int(input("Green: "))
 
 for a in range(16):
-    strip.setPixelColorRGB(a,g,r,b)
+    strip.setPixelColorRGB(a,r,g,b)
     strip.show()
